@@ -8,8 +8,8 @@ import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.support.annotation.IntDef
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -24,19 +24,34 @@ class RecordButton @JvmOverloads constructor(
         const val STROKE_WIDTH = 8
 
         const val DURATION_PRESS_ANIMATION = 500L
+        const val RECORD_MAX_DURATION = 5000L
     }
 
-    var circle: Circle = Circle()
-    var arc = Arc()
-    var currentValue: Float = 0f
+    object Touch {
+        const val STATE_NORMAL = 0
+        const val STATE_PRESS = 1
+        const val STATE_RECORD = 2
 
-    var centerX = 0
-    var centerY = 0
-    var percent = .5f
+        @Retention(AnnotationRetention.SOURCE)
+        @IntDef(STATE_NORMAL, STATE_PRESS, STATE_RECORD)
+        annotation class STATE
+    }
+
+    @Touch.STATE
+    var state = Touch.STATE_NORMAL
+
+    private var circle: Circle = Circle()
+    private var arc = Arc()
+
+    private var currentRadiusValue: Float = 0f
+    private var centerX = 0
+    private var centerY = 0
 
     private var pressAnimator: ValueAnimator? = null
+    private var recordAnimator: ValueAnimator? = null
 
     private val dp = Resources.getSystem().displayMetrics.density
+
     private val smallPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.BLACK
         style = Paint.Style.FILL
@@ -82,15 +97,13 @@ class RecordButton @JvmOverloads constructor(
 
     }
 
-    private fun enterPressState(){
-        pressAnimator = ValueAnimator.ofFloat(currentValue, 1f).apply {
-            duration = DURATION_PRESS_ANIMATION
+    private fun runRecordAnim() {
+        recordAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = RECORD_MAX_DURATION
             interpolator = LinearInterpolator()
             addUpdateListener {
                 val value = it.animatedValue as Float
-                currentValue = value
-                circle.calculateCurrentValue(value)
-                arc.calculateCurrentValue(value)
+                arc.calculateAngle(value)
                 postInvalidate()
             }
             addListener(object : Animator.AnimatorListener {
@@ -103,18 +116,29 @@ class RecordButton @JvmOverloads constructor(
 
                 override fun onAnimationCancel(animation: Animator?) {}
 
-                override fun onAnimationStart(animation: Animator?) {}
+                override fun onAnimationStart(animation: Animator?) {
+                    state = Touch.STATE_RECORD
+                }
             })
         }.apply { start() }
     }
 
-    private fun exitPressState(){
-        pressAnimator = ValueAnimator.ofFloat(currentValue, 0f).apply {
+    private fun enterPressState() {
+
+        if (recordAnimator?.isRunning == true) {
+            recordAnimator!!.cancel()
+        }
+
+        if (pressAnimator?.isRunning == true) {
+            pressAnimator!!.cancel()
+        }
+
+        pressAnimator = ValueAnimator.ofFloat(currentRadiusValue, 1f).apply {
             duration = DURATION_PRESS_ANIMATION
             interpolator = LinearInterpolator()
             addUpdateListener {
                 val value = it.animatedValue as Float
-                currentValue = value
+                currentRadiusValue = value
                 circle.calculateCurrentValue(value)
                 arc.calculateCurrentValue(value)
                 postInvalidate()
@@ -123,13 +147,54 @@ class RecordButton @JvmOverloads constructor(
                 override fun onAnimationRepeat(animation: Animator?) {}
 
                 override fun onAnimationEnd(animation: Animator?) {
-
-                    postInvalidate()
+                    if (state == Touch.STATE_PRESS) {
+                        state = Touch.STATE_RECORD
+                        runRecordAnim()
+                    }
                 }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                    state = Touch.STATE_NORMAL
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                    state = Touch.STATE_PRESS
+                }
+            })
+        }.apply { start() }
+    }
+
+    private fun exitPressState() {
+        if (recordAnimator?.isRunning == true) {
+            recordAnimator!!.cancel()
+
+        }
+
+        if (pressAnimator?.isRunning == true) {
+            pressAnimator!!.cancel()
+        }
+
+        arc.calculateAngle(0f)
+        pressAnimator = ValueAnimator.ofFloat(currentRadiusValue, 0f).apply {
+            duration = DURATION_PRESS_ANIMATION
+            interpolator = LinearInterpolator()
+            addUpdateListener {
+                val value = it.animatedValue as Float
+                currentRadiusValue = value
+                circle.calculateCurrentValue(value)
+                arc.calculateCurrentValue(value)
+                postInvalidate()
+            }
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {}
+
+                override fun onAnimationEnd(animation: Animator?) {}
 
                 override fun onAnimationCancel(animation: Animator?) {}
 
-                override fun onAnimationStart(animation: Animator?) {}
+                override fun onAnimationStart(animation: Animator?) {
+                    state = Touch.STATE_NORMAL
+                }
             })
         }.apply { start() }
     }

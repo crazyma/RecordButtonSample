@@ -17,7 +17,7 @@ class Arc() {
     var centerY = 0
     var currentRectF: RectF = RectF(0f, 0f, 0f, 0f)
 
-    var angle = 270f
+    var angle = 0f
     val positiveStart = ANGLE_START
     var positiveSweep = angle
         get() = angle
