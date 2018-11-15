@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.CornerPathEffect
 import android.graphics.Paint
 import android.support.annotation.IntDef
 import android.util.AttributeSet
@@ -52,6 +53,9 @@ class RecordButton @JvmOverloads constructor(
 
     private val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
+        strokeJoin = Paint.Join.ROUND
+        strokeCap = Paint.Cap.ROUND
+        pathEffect = CornerPathEffect(50f)
     }
 
     init {
@@ -93,10 +97,11 @@ class RecordButton @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        arcPaint.color = pressedColor
-        canvas.drawArc(arc.currentRectF, arc.positiveStart, arc.positiveSweep, false, arcPaint)
+
         arcPaint.color = normalColor
         canvas.drawArc(arc.currentRectF, arc.negativeStart, arc.negativeSweep, false, arcPaint)
+        arcPaint.color = pressedColor
+        canvas.drawArc(arc.currentRectF, arc.positiveStart, arc.positiveSweep, false, arcPaint)
 
         canvas.drawCircle(centerX.toFloat(), centerY.toFloat(), circle.currentRadius, circlePaint)
     }
