@@ -103,6 +103,7 @@ class RecordButton @JvmOverloads constructor(
         arcPaint.color = pressedColor
         canvas.drawArc(arc.currentRectF, arc.positiveStart, arc.positiveSweep, false, arcPaint)
 
+        circlePaint.color = if(state == Touch.STATE_RECORD) pressedColor else normalColor
         canvas.drawCircle(centerX.toFloat(), centerY.toFloat(), circle.currentRadius, circlePaint)
     }
 
