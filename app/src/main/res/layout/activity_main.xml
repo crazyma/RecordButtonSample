@@ -27,6 +27,8 @@
         rb:pressedArcRadius="34dp"
         rb:normalColor="@android:color/black"
         rb:pressedColor="@color/colorRed"
+        rb:pressDuration="200"
+        rb:recordTime="5000"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"

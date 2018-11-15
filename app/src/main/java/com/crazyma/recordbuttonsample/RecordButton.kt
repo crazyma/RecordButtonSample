@@ -19,11 +19,6 @@ class RecordButton @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    companion object {
-        const val DURATION_PRESS_ANIMATION = 500L
-        const val RECORD_MAX_DURATION = 5000L
-    }
-
     object Touch {
         const val STATE_NORMAL = 0
         const val STATE_PRESS = 1
@@ -42,6 +37,8 @@ class RecordButton @JvmOverloads constructor(
     private var centerY = 0
     private var normalColor = Color.BLACK
     private var pressedColor = Color.RED
+    private var pressDuration = 500L
+    private var recordTime = 5000L
 
     private var pressAnimator: ValueAnimator? = null
     private var recordAnimator: ValueAnimator? = null
@@ -76,6 +73,8 @@ class RecordButton @JvmOverloads constructor(
                 arcPaint.strokeWidth = getDimension(R.styleable.RecordButton_strokeWidth, 12f)
                 normalColor = getColor(R.styleable.RecordButton_normalColor, Color.BLACK)
                 pressedColor = getColor(R.styleable.RecordButton_pressedColor, Color.RED)
+                pressDuration = getInteger(R.styleable.RecordButton_pressDuration, 500).toLong()
+                recordTime = getInteger(R.styleable.RecordButton_recordTime, 5000).toLong()
             } finally {
                 recycle()
             }
@@ -120,7 +119,7 @@ class RecordButton @JvmOverloads constructor(
 
     private fun runRecordAnim() {
         recordAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = RECORD_MAX_DURATION
+            duration = recordTime
             interpolator = LinearInterpolator()
             addUpdateListener {
                 val value = it.animatedValue as Float
@@ -155,7 +154,7 @@ class RecordButton @JvmOverloads constructor(
         }
 
         pressAnimator = ValueAnimator.ofFloat(currentRadiusValue, 1f).apply {
-            duration = DURATION_PRESS_ANIMATION
+            duration = pressDuration
             interpolator = LinearInterpolator()
             addUpdateListener {
                 val value = it.animatedValue as Float
@@ -197,7 +196,7 @@ class RecordButton @JvmOverloads constructor(
 
         arc.calculateAngle(0f)
         pressAnimator = ValueAnimator.ofFloat(currentRadiusValue, 0f).apply {
-            duration = DURATION_PRESS_ANIMATION
+            duration = pressDuration
             interpolator = LinearInterpolator()
             addUpdateListener {
                 val value = it.animatedValue as Float
