@@ -45,7 +45,7 @@ class Arc(var normalRadius: Float, var pressedRadius: Float) {
         calculateRectF()
     }
 
-    fun calculateDistance() {
+    private fun calculateDistance() {
         radiusDistance = normalRadius - pressedRadius
     }
 
