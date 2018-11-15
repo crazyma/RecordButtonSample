@@ -2,30 +2,30 @@ package com.crazyma.recordbuttonsample
 
 import android.graphics.RectF
 
-class Arc() {
+class Arc(var normalRadius: Float, var pressedRadius: Float) {
 
     companion object {
         const val ANGLE_START = -90f
         const val ANGLE_END = 270f
     }
 
-    var normalRadius = 140f
-    var pressedRadius = 150f
-    var radiusDistance = 0f
-    var currentRadius = normalRadius
-    var centerX = 0
-    var centerY = 0
-    var currentRectF: RectF = RectF(0f, 0f, 0f, 0f)
+    private var radiusDistance = 0f
+    private var currentRadius = normalRadius
+    private var centerX = 0
+    private var centerY = 0
+    private var angle = 0f
 
-    var angle = 270f
     val positiveStart = ANGLE_START
     var positiveSweep = angle
         get() = angle
     var negativeStart = angle + ANGLE_START
     var negativeSweep = ANGLE_END - negativeStart
 
+    var currentRectF: RectF = RectF(0f, 0f, 0f, 0f)
+
     init {
         calculateDistance()
+        calculateRectF()
     }
 
     fun calculateCurrentValue(value: Float) {
@@ -47,7 +47,6 @@ class Arc() {
 
     private fun calculateDistance() {
         radiusDistance = normalRadius - pressedRadius
-        calculateRectF()
     }
 
     private fun calculateRectF() {

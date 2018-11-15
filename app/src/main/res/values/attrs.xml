@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RecordButton">
+        <attr name="normalCircleRadius" format="dimension" />
+        <attr name="pressedCircleRadius" format="dimension" />
+        <attr name="normalArcRadius" format="dimension" />
+        <attr name="pressedArcRadius" format="dimension" />
+        <attr name="strokeWidth" format="dimension" />
+        <attr name="normalColor" format="reference|color" />
+        <attr name="pressedColor" format="reference|color" />
+        <attr name="pressDuration" format="integer" />
+        <attr name="recordTime" format="integer" />
+    </declare-styleable>
+</resources>
