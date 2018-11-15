@@ -2,7 +2,7 @@ package com.crazyma.recordbuttonsample
 
 import android.graphics.RectF
 
-class Arc(var normalRadius: Float = 140f, var pressedRadius: Float = 150f) {
+class Arc(var normalRadius: Float, var pressedRadius: Float) {
 
     companion object {
         const val ANGLE_START = -90f

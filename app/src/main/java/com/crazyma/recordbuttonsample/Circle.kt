@@ -1,6 +1,6 @@
 package com.crazyma.recordbuttonsample
 
-class Circle(var normalRadius: Float = 120f, var pressedRadius: Float = 90f) {
+class Circle(var normalRadius: Float, var pressedRadius: Float) {
 
     var radiusDistance = 0f
     var currentRadius = normalRadius
@@ -15,7 +15,7 @@ class Circle(var normalRadius: Float = 120f, var pressedRadius: Float = 90f) {
         currentRadius = pressedRadius + radiusDistance * (1f - value)
     }
 
-    private fun calculateDistance() {
+    fun calculateDistance() {
         radiusDistance = normalRadius - pressedRadius
     }
 }

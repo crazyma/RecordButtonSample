@@ -44,8 +44,8 @@ class RecordButton @JvmOverloads constructor(
     private var pressAnimator: ValueAnimator? = null
     private var recordAnimator: ValueAnimator? = null
 
-    private var circle: Circle = Circle()
-    private var arc = Arc()
+    private lateinit var circle: Circle
+    private lateinit var arc: Arc
 
     private val circlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.BLACK
@@ -61,11 +61,17 @@ class RecordButton @JvmOverloads constructor(
                 0, 0).apply {
 
             try {
-                circle.normalRadius = getDimension(R.styleable.RecordButton_normalCircleRadius, 120f)
-                circle.pressedRadius = getDimension(R.styleable.RecordButton_pressedCircleRadius, 90f)
-                arc.normalRadius = getDimension(R.styleable.RecordButton_normalCircleRadius, 140f)
-                arc.pressedRadius = getDimension(R.styleable.RecordButton_pressedCircleRadius, 150f)
-                arc.calculateDistance()
+
+                circle = Circle(
+                        getDimension(R.styleable.RecordButton_normalCircleRadius, 120f),
+                        getDimension(R.styleable.RecordButton_pressedCircleRadius, 90f)
+                )
+
+                arc = Arc(
+                        getDimension(R.styleable.RecordButton_normalArcRadius, 140f),
+                        getDimension(R.styleable.RecordButton_pressedArcRadius, 150f)
+                )
+
                 arcPaint.strokeWidth = getDimension(R.styleable.RecordButton_strokeWidth, 12f)
             } finally {
                 recycle()
