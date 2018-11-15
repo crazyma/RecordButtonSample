@@ -1,30 +1,21 @@
 package com.crazyma.recordbuttonsample
 
-import android.graphics.Paint
+class Circle(var normalRadius: Float = 120f, var pressedRadius: Float = 90f) {
 
-class Circle() {
-
-    var normalRadius = 120f
-    var pressedRadius = 90f
     var radiusDistance = 0f
     var currentRadius = normalRadius
     var centerX = 0
     var centerY = 0
 
-    var paint: Paint? = null
-
-    init{
+    init {
         calculateDistance()
     }
 
-    fun calculateCurrentValue(value: Float){
-
+    fun calculateCurrentValue(value: Float) {
         currentRadius = pressedRadius + radiusDistance * (1f - value)
     }
 
-    private fun calculateDistance(){
+    private fun calculateDistance() {
         radiusDistance = normalRadius - pressedRadius
     }
-
-
 }

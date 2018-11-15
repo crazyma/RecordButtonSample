@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -21,8 +20,6 @@ class RecordButton @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     companion object {
-        const val STROKE_WIDTH = 8
-
         const val DURATION_PRESS_ANIMATION = 500L
         const val RECORD_MAX_DURATION = 5000L
     }
@@ -40,9 +37,6 @@ class RecordButton @JvmOverloads constructor(
     @Touch.STATE
     var state = Touch.STATE_NORMAL
 
-    private var circle: Circle = Circle()
-    private var arc = Arc()
-
     private var currentRadiusValue: Float = 0f
     private var centerX = 0
     private var centerY = 0
@@ -50,17 +44,33 @@ class RecordButton @JvmOverloads constructor(
     private var pressAnimator: ValueAnimator? = null
     private var recordAnimator: ValueAnimator? = null
 
-    private val dp = Resources.getSystem().displayMetrics.density
+    private var circle: Circle = Circle()
+    private var arc = Arc()
 
-    private val smallPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val circlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.BLACK
         style = Paint.Style.FILL
     }
 
-    private val largePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.RED
+    private val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = STROKE_WIDTH * dp
+    }
+
+    init {
+        context.theme.obtainStyledAttributes(attrs, R.styleable.RecordButton,
+                0, 0).apply {
+
+            try {
+                circle.normalRadius = getDimension(R.styleable.RecordButton_normalCircleRadius, 120f)
+                circle.pressedRadius = getDimension(R.styleable.RecordButton_pressedCircleRadius, 90f)
+                arc.normalRadius = getDimension(R.styleable.RecordButton_normalCircleRadius, 140f)
+                arc.pressedRadius = getDimension(R.styleable.RecordButton_pressedCircleRadius, 150f)
+                arc.calculateDistance()
+                arcPaint.strokeWidth = getDimension(R.styleable.RecordButton_strokeWidth, 12f)
+            } finally {
+                recycle()
+            }
+        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -73,12 +83,12 @@ class RecordButton @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        largePaint.color = Color.RED
-        canvas.drawArc(arc.currentRectF, arc.positiveStart, arc.positiveSweep, false, largePaint)
-        largePaint.color = Color.BLACK
-        canvas.drawArc(arc.currentRectF, arc.negativeStart, arc.negativeSweep, false, largePaint)
+        arcPaint.color = Color.RED
+        canvas.drawArc(arc.currentRectF, arc.positiveStart, arc.positiveSweep, false, arcPaint)
+        arcPaint.color = Color.BLACK
+        canvas.drawArc(arc.currentRectF, arc.negativeStart, arc.negativeSweep, false, arcPaint)
 
-        canvas.drawCircle(centerX.toFloat(), centerY.toFloat(), circle.currentRadius, smallPaint)
+        canvas.drawCircle(centerX.toFloat(), centerY.toFloat(), circle.currentRadius, circlePaint)
     }
 
     @SuppressLint("ClickableViewAccessibility")
