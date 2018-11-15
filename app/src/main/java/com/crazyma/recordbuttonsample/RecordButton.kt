@@ -40,6 +40,8 @@ class RecordButton @JvmOverloads constructor(
     private var currentRadiusValue: Float = 0f
     private var centerX = 0
     private var centerY = 0
+    private var normalColor = Color.BLACK
+    private var pressedColor = Color.RED
 
     private var pressAnimator: ValueAnimator? = null
     private var recordAnimator: ValueAnimator? = null
@@ -48,7 +50,6 @@ class RecordButton @JvmOverloads constructor(
     private lateinit var arc: Arc
 
     private val circlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.BLACK
         style = Paint.Style.FILL
     }
 
@@ -73,10 +74,14 @@ class RecordButton @JvmOverloads constructor(
                 )
 
                 arcPaint.strokeWidth = getDimension(R.styleable.RecordButton_strokeWidth, 12f)
+                normalColor = getColor(R.styleable.RecordButton_normalColor, Color.BLACK)
+                pressedColor = getColor(R.styleable.RecordButton_pressedColor, Color.RED)
             } finally {
                 recycle()
             }
         }
+
+        circlePaint.color = normalColor
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -89,9 +94,9 @@ class RecordButton @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        arcPaint.color = Color.RED
+        arcPaint.color = pressedColor
         canvas.drawArc(arc.currentRectF, arc.positiveStart, arc.positiveSweep, false, arcPaint)
-        arcPaint.color = Color.BLACK
+        arcPaint.color = normalColor
         canvas.drawArc(arc.currentRectF, arc.negativeStart, arc.negativeSweep, false, arcPaint)
 
         canvas.drawCircle(centerX.toFloat(), centerY.toFloat(), circle.currentRadius, circlePaint)

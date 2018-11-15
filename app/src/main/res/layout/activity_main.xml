@@ -25,6 +25,8 @@
         rb:strokeWidth="4dp"
         rb:normalArcRadius="32dp"
         rb:pressedArcRadius="34dp"
+        rb:normalColor="@android:color/black"
+        rb:pressedColor="@color/colorRed"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"

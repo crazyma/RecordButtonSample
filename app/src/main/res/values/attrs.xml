@@ -6,5 +6,7 @@
         <attr name="normalArcRadius" format="dimension"/>
         <attr name="pressedArcRadius" format="dimension"/>
         <attr name="strokeWidth" format="dimension"/>
+        <attr name="normalColor" format="reference|color"/>
+        <attr name="pressedColor" format="reference|color"/>
     </declare-styleable>
 </resources>
