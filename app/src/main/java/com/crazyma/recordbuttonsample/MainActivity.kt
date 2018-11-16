@@ -25,10 +25,6 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG,"on start recording")
             }
 
-            override fun onCancelRecording() {
-                Log.d(TAG,"on cancel recording")
-            }
-
             override fun onFinishRecording() {
                 Log.d(TAG,"on finish recording")
             }

@@ -2,6 +2,7 @@ package com.crazyma.recordbuttonsample
 
 import android.animation.Animator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -38,12 +39,6 @@ class RecordButton @JvmOverloads constructor(
          * Been called when Record Progress Bar start to run.
          */
         fun onStartRecording()
-
-        /**
-         * Been called when releasing finger when the Record Progress Bar is running.
-         * It would also call [onFinishRecording] after this.
-         */
-        fun onCancelRecording()
 
         /**
          * Been called when Record Progress Bar is ran to the end.
@@ -131,6 +126,7 @@ class RecordButton @JvmOverloads constructor(
         canvas.drawCircle(centerX.toFloat(), centerY.toFloat(), circle.currentRadius, circlePaint)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return when (event.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -168,9 +164,7 @@ class RecordButton @JvmOverloads constructor(
                     postInvalidate()
                 }
 
-                override fun onAnimationCancel(animation: Animator?) {
-                    onRecordListener?.onCancelRecording()
-                }
+                override fun onAnimationCancel(animation: Animator?) {}
 
                 override fun onAnimationStart(animation: Animator?) {
                     state = Touch.STATE_RECORD
