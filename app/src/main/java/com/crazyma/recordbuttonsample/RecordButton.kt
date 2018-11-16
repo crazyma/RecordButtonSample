@@ -2,7 +2,6 @@ package com.crazyma.recordbuttonsample
 
 import android.animation.Animator
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -20,6 +19,10 @@ class RecordButton @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    companion object {
+        private const val SHORT_CLICK_LIMIT = 100L
+    }
+
     object Touch {
         const val STATE_NORMAL = 0
         const val STATE_PRESS = 1
@@ -30,8 +33,28 @@ class RecordButton @JvmOverloads constructor(
         annotation class STATE
     }
 
+    interface OnRecordListener{
+        /**
+         * Been called when Record Progress Bar start to run.
+         */
+        fun onStartRecording()
+
+        /**
+         * Been called when releasing finger when the Record Progress Bar is running.
+         * It would also call [onFinishRecording] after this.
+         */
+        fun onCancelRecording()
+
+        /**
+         * Been called when Record Progress Bar is ran to the end.
+         */
+        fun onFinishRecording()
+    }
+
     @Touch.STATE
     var state = Touch.STATE_NORMAL
+
+    var onRecordListener: OnRecordListener? = null
 
     private var currentRadiusValue: Float = 0f
     private var centerX = 0
@@ -40,6 +63,7 @@ class RecordButton @JvmOverloads constructor(
     private var pressedColor = Color.RED
     private var pressDuration = 500L
     private var recordTime = 5000L
+    @Volatile private var isShortClick = false
 
     private var pressAnimator: ValueAnimator? = null
     private var recordAnimator: ValueAnimator? = null
@@ -103,17 +127,22 @@ class RecordButton @JvmOverloads constructor(
         arcPaint.color = pressedColor
         canvas.drawArc(arc.currentRectF, arc.positiveStart, arc.positiveSweep, false, arcPaint)
 
+        circlePaint.color = if(state == Touch.STATE_RECORD) pressedColor else normalColor
         canvas.drawCircle(centerX.toFloat(), centerY.toFloat(), circle.currentRadius, circlePaint)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                isShortClick = true
+                pressCounting()
                 enterPressState()
                 true
             }
             MotionEvent.ACTION_UP -> {
+                if(isShortClick){
+                    performClick()
+                }
                 exitPressState()
                 true
             }
@@ -135,11 +164,13 @@ class RecordButton @JvmOverloads constructor(
                 override fun onAnimationRepeat(animation: Animator?) {}
 
                 override fun onAnimationEnd(animation: Animator?) {
-
+                    onRecordListener?.onFinishRecording()
                     postInvalidate()
                 }
 
-                override fun onAnimationCancel(animation: Animator?) {}
+                override fun onAnimationCancel(animation: Animator?) {
+                    onRecordListener?.onCancelRecording()
+                }
 
                 override fun onAnimationStart(animation: Animator?) {
                     state = Touch.STATE_RECORD
@@ -175,6 +206,7 @@ class RecordButton @JvmOverloads constructor(
                     if (state == Touch.STATE_PRESS) {
                         state = Touch.STATE_RECORD
                         runRecordAnim()
+                        onRecordListener?.onStartRecording()
                     }
                 }
 
@@ -192,7 +224,6 @@ class RecordButton @JvmOverloads constructor(
     private fun exitPressState() {
         if (recordAnimator?.isRunning == true) {
             recordAnimator!!.cancel()
-
         }
 
         if (pressAnimator?.isRunning == true) {
@@ -222,6 +253,15 @@ class RecordButton @JvmOverloads constructor(
                 }
             })
         }.apply { start() }
+    }
+
+    private fun pressCounting() {
+        Thread(Runnable {
+            Thread.sleep(SHORT_CLICK_LIMIT)
+            post {
+                isShortClick = false
+            }
+        }).start()
     }
 
 }
