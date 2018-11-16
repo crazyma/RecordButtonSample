@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.crazyma.recordbuttonsample.RecordButton
-        android:id="@+id/view"
+        android:id="@+id/recordButton"
         android:layout_width="200dp"
         android:layout_height="200dp"
         rb:normalCircleRadius="56dp"

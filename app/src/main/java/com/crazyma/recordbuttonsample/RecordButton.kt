@@ -2,7 +2,6 @@ package com.crazyma.recordbuttonsample
 
 import android.animation.Animator
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -19,6 +18,10 @@ class RecordButton @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+
+    companion object {
+        private const val SHORT_CLICK_LIMIT = 100L
+    }
 
     object Touch {
         const val STATE_NORMAL = 0
@@ -40,6 +43,7 @@ class RecordButton @JvmOverloads constructor(
     private var pressedColor = Color.RED
     private var pressDuration = 500L
     private var recordTime = 5000L
+    @Volatile private var isShortClick = false
 
     private var pressAnimator: ValueAnimator? = null
     private var recordAnimator: ValueAnimator? = null
@@ -107,14 +111,18 @@ class RecordButton @JvmOverloads constructor(
         canvas.drawCircle(centerX.toFloat(), centerY.toFloat(), circle.currentRadius, circlePaint)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                isShortClick = true
+                pressCounting()
                 enterPressState()
                 true
             }
             MotionEvent.ACTION_UP -> {
+                if(isShortClick){
+                    performClick()
+                }
                 exitPressState()
                 true
             }
@@ -223,6 +231,15 @@ class RecordButton @JvmOverloads constructor(
                 }
             })
         }.apply { start() }
+    }
+
+    private fun pressCounting() {
+        Thread(Runnable {
+            Thread.sleep(SHORT_CLICK_LIMIT)
+            post {
+                isShortClick = false
+            }
+        }).start()
     }
 
 }
