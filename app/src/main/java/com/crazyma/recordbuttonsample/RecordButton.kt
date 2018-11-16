@@ -33,8 +33,28 @@ class RecordButton @JvmOverloads constructor(
         annotation class STATE
     }
 
+    interface OnRecordListener{
+        /**
+         * Been called when Record Progress Bar start to run.
+         */
+        fun onStartRecording()
+
+        /**
+         * Been called when releasing finger when the Record Progress Bar is running.
+         * It would also call [onFinishRecording] after this.
+         */
+        fun onCancelRecording()
+
+        /**
+         * Been called when Record Progress Bar is ran to the end.
+         */
+        fun onFinishRecording()
+    }
+
     @Touch.STATE
     var state = Touch.STATE_NORMAL
+
+    var onRecordListener: OnRecordListener? = null
 
     private var currentRadiusValue: Float = 0f
     private var centerX = 0
@@ -144,11 +164,13 @@ class RecordButton @JvmOverloads constructor(
                 override fun onAnimationRepeat(animation: Animator?) {}
 
                 override fun onAnimationEnd(animation: Animator?) {
-
+                    onRecordListener?.onFinishRecording()
                     postInvalidate()
                 }
 
-                override fun onAnimationCancel(animation: Animator?) {}
+                override fun onAnimationCancel(animation: Animator?) {
+                    onRecordListener?.onCancelRecording()
+                }
 
                 override fun onAnimationStart(animation: Animator?) {
                     state = Touch.STATE_RECORD
@@ -184,6 +206,7 @@ class RecordButton @JvmOverloads constructor(
                     if (state == Touch.STATE_PRESS) {
                         state = Touch.STATE_RECORD
                         runRecordAnim()
+                        onRecordListener?.onStartRecording()
                     }
                 }
 
@@ -201,7 +224,6 @@ class RecordButton @JvmOverloads constructor(
     private fun exitPressState() {
         if (recordAnimator?.isRunning == true) {
             recordAnimator!!.cancel()
-
         }
 
         if (pressAnimator?.isRunning == true) {
