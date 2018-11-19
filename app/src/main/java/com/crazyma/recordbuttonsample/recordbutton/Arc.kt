@@ -1,4 +1,4 @@
-package com.crazyma.recordbuttonsample
+package com.crazyma.recordbuttonsample.recordbutton
 
 import android.graphics.RectF
 

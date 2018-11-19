@@ -1,4 +1,4 @@
-package com.crazyma.recordbuttonsample
+package com.crazyma.recordbuttonsample.recordbutton
 
 class Circle(var normalRadius: Float, var pressedRadius: Float) {
 
