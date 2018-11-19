@@ -1,4 +1,4 @@
-package com.crazyma.recordbuttonsample
+package com.crazyma.recordbuttonsample.recordbutton
 
 import android.animation.Animator
 import android.animation.ValueAnimator
@@ -13,6 +13,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
+import com.crazyma.recordbuttonsample.R
 
 class RecordButton @JvmOverloads constructor(
         context: Context,
