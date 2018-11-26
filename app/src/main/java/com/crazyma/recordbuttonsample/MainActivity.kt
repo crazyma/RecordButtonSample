@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
         
         recordButton.setOnClickListener {
-            Log.d(TAG,"on click")
+            Log.i(TAG,"on click")
         }
         
         recordButton.onRecordListener = object : RecordButton.OnRecordListener{
